@@ -20,12 +20,33 @@ let tasks = [
 ];
 
 app.post("/tasks", (req, res) => {
+	if (!req.body.name) {
+		return res.status(400).json({
+			error: "Task name is required",
+		});
+	}
 	const newTask = {
 		id: tasks.length + 1,
 		name: req.body.name,
 	};
 	tasks.push(newTask);
 	res.json(newTask);
+});
+
+app.delete("/tasks/:id", (req, res) => {
+	const id = Number(req.params.id);
+
+	const index = tasks.findIndex((task) => task.id === id);
+
+	if (index === -1) {
+		return res.status(404).json({
+			error: "Task not found",
+		});
+	}
+
+	const deletedTask = tasks.splice(index, 1);
+
+	res.json(deletedTask[0]);
 });
 
 app.get("/", (req, res) => {
