@@ -4,6 +4,9 @@ const app = express();
 app.use(express.json());
 
 const PORT = 3000;
+
+let nextId = 3;
+
 let homeVisits = 0;
 let aboutVisits = 0;
 let tasksVisits = 0;
@@ -26,10 +29,11 @@ app.post("/tasks", (req, res) => {
 		});
 	}
 	const newTask = {
-		id: tasks.length + 1,
+		id: nextId,
 		name: req.body.name,
 	};
 	tasks.push(newTask);
+	nextId++;
 	res.json(newTask);
 });
 
@@ -47,6 +51,28 @@ app.delete("/tasks/:id", (req, res) => {
 	const deletedTask = tasks.splice(index, 1);
 
 	res.json(deletedTask[0]);
+});
+
+app.put("/tasks/:id", (req, res) => {
+	const id = Number(req.params.id);
+
+	const index = tasks.findIndex((task) => task.id === id);
+
+	if (index === -1) {
+		return res.status(404).json({
+			error: "Task not found",
+		});
+	}
+
+	if (!req.body.name) {
+		return res.status(400).json({
+			error: "Task name is required",
+		});
+	}
+
+	tasks[index].name = req.body.name;
+
+	res.json(tasks[index]);
 });
 
 app.get("/", (req, res) => {
