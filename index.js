@@ -22,6 +22,28 @@ let tasks = [
 	},
 ];
 
+//Home Routes
+
+app.get("/", (req, res) => {
+	homeVisits++;
+	console.log(`Someone visited the home page! ${homeVisits}`);
+	res.send("Hello World");
+});
+
+app.get("/about", (req, res) => {
+	aboutVisits++;
+	console.log(`Someone visited about page! ${aboutVisits}`);
+	res.send("This is the about page!");
+});
+
+app.get("/tasks", (req, res) => {
+	tasksVisits++;
+	console.log(`Someone visited tasks page! ${tasksVisits}`);
+	res.json(tasks);
+});
+
+//Task Routes
+
 app.post("/tasks", (req, res) => {
 	if (!req.body.name) {
 		return res.status(400).json({
@@ -35,22 +57,6 @@ app.post("/tasks", (req, res) => {
 	tasks.push(newTask);
 	nextId++;
 	res.json(newTask);
-});
-
-app.delete("/tasks/:id", (req, res) => {
-	const id = Number(req.params.id);
-
-	const index = tasks.findIndex((task) => task.id === id);
-
-	if (index === -1) {
-		return res.status(404).json({
-			error: "Task not found",
-		});
-	}
-
-	const deletedTask = tasks.splice(index, 1);
-
-	res.json(deletedTask[0]);
 });
 
 app.put("/tasks/:id", (req, res) => {
@@ -75,23 +81,23 @@ app.put("/tasks/:id", (req, res) => {
 	res.json(tasks[index]);
 });
 
-app.get("/", (req, res) => {
-	homeVisits++;
-	console.log(`Someone visited the home page! ${homeVisits}`);
-	res.send("Hello World");
+app.delete("/tasks/:id", (req, res) => {
+	const id = Number(req.params.id);
+
+	const index = tasks.findIndex((task) => task.id === id);
+
+	if (index === -1) {
+		return res.status(404).json({
+			error: "Task not found",
+		});
+	}
+
+	const deletedTask = tasks.splice(index, 1);
+
+	res.json(deletedTask[0]);
 });
 
-app.get("/about", (req, res) => {
-	aboutVisits++;
-	console.log(`Someone visited about page! ${aboutVisits}`);
-	res.send("This is the about page!");
-});
-
-app.get("/tasks", (req, res) => {
-	tasksVisits++;
-	console.log(`Someone visited tasks page! ${tasksVisits}`);
-	res.json(tasks);
-});
+//Server
 
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);
